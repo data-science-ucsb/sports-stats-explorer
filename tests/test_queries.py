@@ -49,3 +49,11 @@ def test_player_profile(db_path):
     assert {"game_date", "opponent", "points"} <= set(df.columns)
     assert len(df) > 0
     assert df["game_date"].is_monotonic_increasing
+
+def test_league_summary(db_path):
+    df = run_query("league_summary", db_path=db_path)
+    assert list(df.columns) == ["n_teams", "n_players", "n_games"]
+    assert len(df) == 1
+    assert df.iloc[0]["n_teams"] > 0
+    assert df.iloc[0]["n_players"] > 0
+    assert df.iloc[0]["n_games"] > 0

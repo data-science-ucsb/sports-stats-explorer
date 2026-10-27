@@ -9,7 +9,7 @@ Every file in app/pages/ automatically becomes a page in the sidebar.
 import streamlit as st
 
 from common import ensure_database
-from sports_stats.db import get_connection
+from sports_stats.db import run_query
 
 st.set_page_config(page_title="Sports Stats Explorer", page_icon="🏀", layout="wide")
 ensure_database()
@@ -19,11 +19,10 @@ st.write("Settling sports arguments with actual data. Pick a question from the s
 st.page_link("pages/5_NFL_Overview.py", label="NFL Overview — live stats and Three.js charts", icon="🏈")
 
 # A few headline numbers, straight from SQL.
-# TODO (good first task): move this query into sql/league_summary.sql and use run_query.
-with get_connection() as conn:
-    n_teams, n_players, n_games = conn.execute(
-        "SELECT (SELECT COUNT(*) FROM teams), (SELECT COUNT(*) FROM players), (SELECT COUNT(*) FROM games)"
-    ).fetchone()
+summary = run_query("league_summary")
+n_teams = int(summary.iloc[0]["n_teams"])
+n_players = int(summary.iloc[0]["n_players"])
+n_games = int(summary.iloc[0]["n_games"])
 
 c1, c2, c3 = st.columns(3)
 c1.metric("Teams", n_teams)
